@@ -3,7 +3,7 @@ var company        = '';
 var login          = '';
 var pass           = '';
 
-/* Workpaths, you have to create them. 
+/* Output paths.
  * Making them absolute simplifies systemd/cron calls. 
  */
 var downloadPath   = 'Abrechnungen/';
@@ -18,6 +18,7 @@ var casper = require('casper').create({
 });
 
 casper.start('https://www.adpworld.de');
+
 casper.on('remote.message', function(msg) {
     this.echo('remote message caught: ' + msg);
 });
