@@ -3,9 +3,7 @@ var company        = '';
 var login          = '';
 var pass           = '';
 
-/* Output paths.
- * Making them absolute simplifies systemd/cron calls. 
- */
+/* Output paths, making them absolute simplifies systemd/cron calls. */
 var downloadPath   = 'Abrechnungen/';
 var logPath        = 'log/';
 var jqueryFilePath = 'jquery.min.js';
@@ -17,26 +15,34 @@ var casper = require('casper').create({
     }
 });
 
-casper.start('https://www.adpworld.de');
+casper.start();
 
 casper.on('remote.message', function(msg) {
     this.echo('remote message caught: ' + msg);
 });
 
-casper.then(function() {
+casper.thenOpen('https://www.adpworld.de', {
+    headers: {
+        'Accept-Language': 'en'
+    }
+}, function() {
     this.echo('First Page: ' + this.getTitle());
-	this.evaluate(function(c,l,p){
+    this.evaluate(function(c,l,p){
 			$("#company").val(c);
 			$("#login").val(l);
 			$("#login-pw").val(p);
 			$('button:contains("Log In")').trigger('click');
-	}, company, login, pass);
-	casper.page.render(logPath + 'adp_login.png');
+    }, company, login, pass);
+    casper.page.render(logPath + 'adp_login.png');
 });
 
 casper.wait(5000);
 
-casper.thenOpen('https://www.adpworld.de/wps/myportal/ADPWorld/Applications/Archiv/ePayslip', function() {
+casper.thenOpen('https://www.adpworld.de/wps/myportal/ADPWorld/Applications/Archiv/ePayslip', {
+    headers: { 
+        'Accept-Language': 'en'
+    }
+}, function() {
 	 this.echo('Second Page: ' + this.getTitle());
 	 casper.page.render(logPath + 'adp_ePayslip.png');
 	 var files = this.evaluate(function(){
